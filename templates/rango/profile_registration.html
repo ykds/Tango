@@ -1,0 +1,16 @@
+{% extends 'rango/base.html' %}
+
+{% block title %}
+Registration - Step 2
+{% endblock %}
+
+{% block body %}
+    <h1>Registration - Step 2</h1>
+    {% if request.user.is_authenticated %}
+    <form style="margin-top: 20px" enctype="multipart/form-data" action="{% url 'rango:register_profile' user.username %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit"/>
+    </form>
+    {% endif %}
+{% endblock %}

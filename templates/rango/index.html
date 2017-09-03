@@ -36,10 +36,10 @@
 			<div class="col-lg-6">
 				<h4>Most Viewed Pages</h4>
 				<p>
-				{% if pages %}
+				{% if page_list %}
 				<ul class="list-group">
-				{% for page in pages %}
-{#				 <li class="list-group-item"><a href="{% url 'goto' %}?page_id={{page.id}}"\>{{ page.title }}</a> <span class="badge badge-pill badge-primary">{{page.views}}</span></li>#}
+				{% for page in page_list %}
+{#				 <li class="list-group-item"><a href="{% url 'rango:goto' %}?page_id={{page.id}}">{{ page.title }}</a> <span class="badge badge-pill badge-primary">{{page.views}}</span></li>#}
                 {% endfor %}
                 </ul>
 				{% else %}

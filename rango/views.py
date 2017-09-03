@@ -25,10 +25,7 @@ def index(request):
 
 
 def abount(request):
-    if request.session.test_cookie_worked():
-        print('Test Cookies worked')
-        request.session.delete_test_cookie()
-    return HttpResponse("Rango says here is the abount page<br><a href='/rango/'>Index</a>")
+    return render(request, 'rango/abount.html')
 
 
 class CategoryDetailView(DetailView):
@@ -39,22 +36,55 @@ class CategoryDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         pages = Page.objects.filter(category__slug=self.kwargs.get('slug')).order_by('-views') # = Page.objects.filter(category=category)
-        form = CategoryForm()
         context.update({
             'pages': pages,
-            'form': form,
         })
         return context
 
 
 @login_required
 def add_category(request):
-    form = CategoryForm(request.POST)
-    if form.is_valid():
-        form.save()
+    form = CategoryForm()
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+        else:
+            print(form.errors)
         return redirect('rango:index')
-    else:
-        print(form.errors)
+    return render(request, 'rango/add_category.html', context={'form': form})
+
+@login_required
+def like_category(request):
+    category_id = None
+    likes = 0
+    if request.method == 'GET':
+        category_id = request.GET['category_id']
+    if category_id:
+        category = get_object_or_404(Category, id=category_id)
+        category.likes += 1
+        category.save()
+        likes = category.likes
+    return HttpResponse(likes)
+
+
+def get_category_list(max_results=0, starts_with=''):
+    cat_list = []
+    if starts_with:
+        cat_list = Category.objects.filter(name__istartswith=starts_with)
+    if max_results > 0:
+        if len(cat_list) > max_results:
+            cat_list = cat_list[:max_results]
+    return cat_list
+
+
+def suggest_category(request):
+    cat_list = []
+    starts_with = ''
+    if request.method == 'GET':
+        starts_with = request.GET['suggestion']
+    cat_list = get_category_list(8, starts_with)
+    return render(request, 'rango/cats.html', {'cats': cat_list})
 
 
 @login_required
@@ -94,6 +124,9 @@ def track_url(request):
         except Page.DoesNotExist:
             return redirect(reverse('rango:index'))
         page.views += 1
+        if page.first_visit == None:
+            page.first_visit = page.last_visit = datetime.now()
+        page.last_visit = datetime.now()
         page.save()
         return redirect(page.url)
     return redirect(reverse('rango:index'))

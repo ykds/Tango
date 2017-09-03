@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^profile/(?P<pk>\d+)/$', views.ProfileDetailView.as_view(), name='profile'),
     url(r'^edit_profile/(?P<username>[\w\-]+)/$', views.update_profile, name='edit_profile'),
     url(r'^profiles/$', views.ListProfiles.as_view(), name='profiles'),
+    url(r'^like/$', views.like_category, name='likes'),
+    url(r'^suggest/$', views.suggest_category, name='suggestion'),
 ]

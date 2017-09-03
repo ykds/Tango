@@ -1,2 +1,6 @@
 venv/
 .idea/
+rango/migrations/
+static/
+.coverage
+rango/__pycache__/
